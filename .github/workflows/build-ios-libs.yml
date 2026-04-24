@@ -28,17 +28,10 @@ jobs:
             '.#packages.aarch64-darwin."aarch64-darwin-ios:lib:simplex-chat"' \
             -o result-ios-device
 
-      - name: Build iOS x86_64 (simulator) lib
-        run: |
-          nix build --accept-flake-config \
-            '.#packages.aarch64-darwin."x86_64-darwin-ios:lib:simplex-chat"' \
-            -o result-ios-sim
-
       - name: Collect artifacts
         run: |
           mkdir -p out
           find result-ios-device -name "*.zip" -exec cp {} out/ \;
-          find result-ios-sim -name "*.zip" -exec cp {} out/ \;
           ls -lah out/
 
       - name: Upload artifacts
