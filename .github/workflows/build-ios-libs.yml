@@ -1,0 +1,49 @@
+name: build-ios-libs
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-15
+    timeout-minutes: 330
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          extra-conf: |
+            experimental-features = nix-command flakes
+            substituters = https://cache.nixos.org https://cache.iog.io
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ=
+
+      - name: Magic Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Build iOS aarch64 (device) lib
+        run: |
+          nix build --accept-flake-config \
+            '.#packages.aarch64-darwin."aarch64-darwin-ios:lib:simplex-chat"' \
+            -o result-ios-device
+
+      - name: Build iOS x86_64 (simulator) lib
+        run: |
+          nix build --accept-flake-config \
+            '.#packages.aarch64-darwin."x86_64-darwin-ios:lib:simplex-chat"' \
+            -o result-ios-sim
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p out
+          find result-ios-device -name "*.zip" -exec cp {} out/ \;
+          find result-ios-sim -name "*.zip" -exec cp {} out/ \;
+          ls -lah out/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-libs
+          path: out/*.zip
+          retention-days: 30
