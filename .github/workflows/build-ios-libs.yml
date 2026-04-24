@@ -30,8 +30,10 @@ jobs:
 
       - name: Collect artifacts
         run: |
+          set -eux
           mkdir -p out
-          find result-ios-device -name "*.zip" -exec cp {} out/ \;
+          ls -lah result-ios-device/
+          cp -L result-ios-device/*.zip out/
           ls -lah out/
 
       - name: Upload artifacts
@@ -39,4 +41,5 @@ jobs:
         with:
           name: ios-libs
           path: out/*.zip
+          if-no-files-found: error
           retention-days: 30
