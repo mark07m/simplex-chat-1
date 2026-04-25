@@ -38,7 +38,6 @@ import Simplex.Chat.Store
 import Simplex.Chat.Store.Profiles
 import Simplex.Chat.Types
 import Simplex.Chat.Util (shuffle)
-import Simplex.FileTransfer.Client.Presets (defaultXFTPServers)
 import Simplex.Messaging.Agent as Agent
 import Simplex.Messaging.Agent.Env.SQLite (AgentConfig (..), InitialAgentServers (..), ServerCfg (..), allRoles, createAgentStore, defaultAgentConfig, presetServerCfg)
 import Simplex.Messaging.Agent.Protocol
@@ -71,16 +70,9 @@ defaultChatConfig =
               [ PresetOperator
                   { operator = Just operatorSimpleXChat,
                     smp = simplexChatSMPServers,
-                    useSMP = 4,
-                    xftp = map (presetServer True) $ L.toList defaultXFTPServers,
-                    useXFTP = 3
-                  },
-                PresetOperator
-                  { operator = Just operatorFlux,
-                    smp = fluxSMPServers,
-                    useSMP = 3,
-                    xftp = fluxXFTPServers,
-                    useXFTP = 3
+                    useSMP = 2,
+                    xftp = simplexChatXFTPServers,
+                    useXFTP = 1
                   }
               ],
             ntf = _defaultNtfServers,
